@@ -1,5 +1,5 @@
 
-group "myapp.a"
+group "myapp"
 
 
 dependencies {
@@ -24,7 +24,7 @@ dependencies {
 }
 
 
-mainClassName = "myapp.a.Application"
+mainClassName = "myapp.Application"
 
 jib {
     container {

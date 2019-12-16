@@ -1,4 +1,4 @@
-package myapp.b;
+package myapp;
 
 import io.micronaut.runtime.Micronaut;
 

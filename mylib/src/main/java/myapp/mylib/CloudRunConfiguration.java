@@ -1,4 +1,4 @@
-package mylib;
+package myapp.mylib;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Requires;
@@ -20,8 +20,8 @@ myapp:
  */
 @Requires(property = CloudRunConfiguration.PREFIX)
 @ConfigurationProperties(CloudRunConfiguration.PREFIX)
-interface CloudRunConfiguration {
-  String PREFIX = "com.tzero.mulligan.cloud-run-env";
+public interface CloudRunConfiguration {
+  String PREFIX = "myapp.cloud-run-env";
 
   @NotBlank
   String getService();
