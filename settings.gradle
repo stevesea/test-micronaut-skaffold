@@ -1,0 +1,3 @@
+include 'mylib'
+include 'myapp-a'
+include 'myapp-b'

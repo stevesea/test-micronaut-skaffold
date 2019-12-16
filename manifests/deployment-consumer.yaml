@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myapp-a
+  name: myapp-a
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+
+  selector:
+    matchLabels:
+      app: myapp-a
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myapp-a
+    spec:
+      volumes:
+        - name: tmpdir
+          emptyDir: {}
+      containers:
+      - image: myapp-a
+        name: myapp-a
+
+        env:
+          - name: PORT
+            value: "8080"
+          - name: MICRONAUT_ENVIRONMENTS
+            value: pubsub-emu-k8sIT
+          - name: JAVA_TOOL_OPTIONS
+            value: >-
+              -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=n
+
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            memory: 128Mi
+
+        # NOTE: don't set probes so they don't interfere with debugging
+        #livenessProbe:
+        #  httpGet:
+        #    path: /health
+        #    port: 8080
+        #  initialDelaySeconds: 30
+        #  periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
+          - name: tcp-jvmdebug
+            containerPort: 5005
+            protocol: TCP
+        volumeMounts:
+        - name: tmpdir
+          readOnly: false
+          mountPath: /tmp
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
+          allowPrivilegeEscalation: false
+          capabilities:
+            # to see capabilities:  https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
+            drop:
+            - all
