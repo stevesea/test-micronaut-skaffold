@@ -1,3 +1,26 @@
 micronaut:
-  application:
-    name: mylib
+
+  # on Cloud Run, use PORT env var -- and default to 8080
+  server:
+    port: ${PORT:8080}
+
+  metrics:
+    enabled: true
+    export:
+      newrelic:
+        enabled: false
+
+endpoints:
+  info:
+    enabled: true
+    sensitive: false
+  health:
+    enabled: true
+    details-visible: NEVER #ANONYMOUS, AUTHENTICATED, or NEVER
+    sensitive: false
+  metrics:
+    enabled: true
+    sensitive: false
+  routes:
+    enabled: false
+    sensitive: false

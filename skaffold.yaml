@@ -17,7 +17,7 @@ profiles:
         push: false
 
       artifacts:
-        - &pubArtifact
+        - &artifactA
           context: .
           image: myapp-a
           jib:
@@ -25,7 +25,8 @@ profiles:
             args:
               - -DskipTests
 
-        - &conArtifact
+        - &artifactB
+
           context: .
           image: myapp-b
           jib:
@@ -44,23 +45,23 @@ profiles:
     #
     portForward:
       # myapp-b
-      - &pfConHTTP
+      - &pfAHTTP
         resourceType: deployment
         resourceName: myapp-b
         port: 8080
         localPort: 18080
-      - &pfConDebug
+      - &pfADebug
         resourceType: deployment
         resourceName: myapp-b
         port: 5005
         localPort: 15005
       # myapp-a
-      - &pfPubHTTP
+      - &pfBHTTP
         resourceType: deployment
         resourceName: myapp-a
         port: 8080
         localPort: 28080
-      - &pfPubDebug
+      - &pfBDebug
         resourceType: deployment
         resourceName: myapp-a
         port: 5005
@@ -76,8 +77,9 @@ profiles:
         push: false
 
       artifacts:
-        - *pubArtifact
-        - *conArtifact
+        - *artifactA
+        - *artifactB
+
 
     deploy:
       # always deploy to docker-desktop
@@ -89,11 +91,43 @@ profiles:
     portForward:
       # myapp-b
       - namespace: schristensen
-        << : *pfConHTTP
+        << : *pfAHTTP
       - namespace: schristensen
-        << : *pfConDebug
+        << : *pfADebug
       # myapp-a
       - namespace: schristensen
-        << : *pfPubHTTP
+        << : *pfBHTTP
       - namespace: schristensen
-        << : *pfPubDebug
+        << : *pfBDebug
+
+  - name: default
+
+    activation:
+      - kubeContext: docker-desktop
+    build:
+      local:
+        push: false
+
+      artifacts:
+        - *artifactA
+        - *artifactB
+
+
+    deploy:
+      # always deploy to docker-desktop
+      kubeContext: docker-desktop
+
+      kubectl:
+        manifests: *manifests
+
+    portForward:
+      # myapp-b
+      - namespace: default
+        << : *pfAHTTP
+      - namespace: default
+        << : *pfADebug
+      # myapp-a
+      - namespace: default
+        << : *pfBHTTP
+      - namespace: default
+        << : *pfBDebug

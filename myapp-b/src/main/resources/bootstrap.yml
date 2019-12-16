@@ -1,0 +1,6 @@
+---
+micronaut:
+  application:
+    name: myapp-b
+    instance:
+      id: ${random.shortuuid}
